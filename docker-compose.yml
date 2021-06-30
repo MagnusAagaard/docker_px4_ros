@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  ros-core:
+    image: ros:noetic
+    command: roscore
+    restart: always
+    network_mode: host
+
+  ros-mavros:
+    build: ./dp-mavros/
+    depends_on:
+      - ros-core
+    restart: always
+    network_mode: host
+    privileged: true
+    command: roslaunch --wait /scripts/px4.launch
+
+#  ros-vrpn-server:
+#    build: ./dp-vrpn/
+#    depends_on:
+#      - ros-mavros
+#    restart: always
+#    network_mode: host
+#    privileged: true
+#    command: roslaunch --wait /scripts/vrpn.launch
+
+#  ros-offboard:
+#    build: ./dp-offboard/
+#    depends_on:
+#      - ros-mavros
+#    restart: always
+#    network_mode: host
+#    privileged: true
+#    command: stdbuf -o L python3 /scripts/offboard_ctrl.py
+
+
+  ros-simple:
+    build: ./dp-simple/
+    depends_on:
+      - ros-core
+    restart: always
+    network_mode: host
+    privileged: true
+    command: stdbuf -o L python3 /scripts/read_mavlink.py
+
+
+#  ros-relay:
+#    image: ros:melodic
+#    depends_on:
+#      - ros-vrpn-server
+#    command: rosrun topic_tools relay /vrpn_client_node/drone/pose /mavros/vision_pose/pose
+#    restart: always
+#    network_mode: host
